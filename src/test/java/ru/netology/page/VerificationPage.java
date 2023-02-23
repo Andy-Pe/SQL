@@ -2,22 +2,33 @@ package ru.netology.page;
 
 import com.codeborne.selenide.Condition;
 import com.codeborne.selenide.SelenideElement;
-import lombok.SneakyThrows;
-import static com.codeborne.selenide.Selenide.$;
+import org.openqa.selenium.support.FindBy;
+
+import static com.codeborne.selenide.Selenide.page;
 
 public class VerificationPage {
-    private SelenideElement heading = $(".heading");
-    private SelenideElement codeField = $("[data-test-id=code] input");
-    private SelenideElement verifyButton = $("[data-test-id=action-verify]");
+    @FindBy(css = "[data-test-id=code] input")
+    private SelenideElement codeField;
+    @FindBy(css = "[data-test-id=action-verify]")
+    private SelenideElement verifyButton;
+    @FindBy(css = "[data-test-id=error-notification] .notification__content")
+    private SelenideElement errorNotification;
 
-    public VerificationPage() {
-        heading.shouldBe(Condition.appear).shouldHave(Condition.text("Интернет Банк"));
+    public void verifyVerificationPageVisibility() {
+        codeField.shouldBe(Condition.appear);
     }
 
-    @SneakyThrows
-    public DashboardPage validVerify(String code) {
-        codeField.setValue(code);
+    public void verifyErrorNotificationVisibility() {
+        errorNotification.shouldBe(Condition.appear);
+    }
+
+    public DashboardPage validVerify(String verificationCode) {
+        verify(verificationCode);
+        return page(DashboardPage.class);
+    }
+
+    public void verify(String verificationCode) {
+        codeField.setValue(verificationCode);
         verifyButton.click();
-        return new DashboardPage();
     }
 }
